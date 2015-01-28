@@ -15,5 +15,13 @@ public class TestRationalEquals {
     
     assertTrue("Rational.ONE is not equal to BigInteger.ONE", r.equals(n));
   }
+  
+  @Test
+  public void testCompareRationalAndBigIntegerWholeNumber() {
+    final BigInteger n = BigInteger.valueOf(5);
+    final Rational r = new Rational(25, 5);
+    
+    assertTrue(String.format("Rational (%1$s) and BigInteger (%2$s) are not equal, but should be.", r, n), r.equals(n));
+  }
 
 }
