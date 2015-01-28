@@ -39,16 +39,16 @@ public class Rational extends Number implements Comparable<Rational> {
   public static final Rational ONE = Rational.valueOf(1);
   public static final Rational ZERO = Rational.valueOf(0);
 
-  private static final long serialVersionUID = -1624708924224854658L;
+  private static final long serialVersionUID = -1093296620458469836L;
   
-  private static final BigInteger NEGATIVE_ONE = new BigInteger("-1");
+  private static final BigDecimal NEGATIVE_ONE = new BigDecimal("-1.0");
   private static final Pattern RATIONAL_PATTERN = Pattern.compile("^([\\-]{0,1}[\\d]+)/([\\-]{0,1}[\\d]+)$");
   private static final Pattern FLOATING_POINT_PATTERN = Pattern.compile("([\\-]{0,1}[\\d]*)\\.([\\d]+)$");
   private static final int DEFAULT_BIG_DECIMAL_SCALE = 32;
   private static final RoundingMode DEFAULT_BIG_DECIMAL_ROUNDING_MODE = RoundingMode.HALF_UP;
 
-  private final BigInteger numerator;
-  private final BigInteger denominator;
+  private final BigDecimal numerator;
+  private final BigDecimal denominator;
   private final boolean isRational;
   private final boolean isComplex;
 
@@ -56,11 +56,11 @@ public class Rational extends Number implements Comparable<Rational> {
   private RoundingMode roundingMode;
 
   /**
-   * Creates a Rational from two {@link BigInteger} values.
+   * Creates a Rational from two {@link BigDecimal} values.
    * @param numerator
    * @param denominator
    */
-  public Rational(BigInteger numerator, BigInteger denominator) {
+  public Rational(BigDecimal numerator, BigDecimal denominator) {
     if (numerator == null || denominator == null) {
       throw new IllegalArgumentException("Numerator and denominator may not be null.");
     }
@@ -68,8 +68,8 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new ArithmeticException("Denominator may not be zero.");
     }
 
-    final BigInteger n = numerator;
-    final BigInteger d = denominator;
+    final BigDecimal n = numerator;
+    final BigDecimal d = denominator;
 
     if (isNegative(n, d)) {
       this.numerator = n.abs().multiply(NEGATIVE_ONE);
@@ -87,13 +87,11 @@ public class Rational extends Number implements Comparable<Rational> {
   }
 
   /**
-   * Creates a Rational from two {@link BigInteger} values. This constructor is used internally by Rational.
-   * This is marked not complex.
+   * Creates a Rational from two {@link BigInteger} values.
    * @param numerator
    * @param denominator
-   * @param isRational
    */
-  private Rational(BigInteger numerator, BigInteger denominator, boolean isRational) {
+  public Rational(BigInteger numerator, BigInteger denominator) {
     if (numerator == null || denominator == null) {
       throw new IllegalArgumentException("Numerator and denominator may not be null.");
     }
@@ -101,8 +99,41 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new ArithmeticException("Denominator may not be zero.");
     }
 
-    final BigInteger n = numerator;
-    final BigInteger d = denominator;
+    final BigDecimal n = new BigDecimal(numerator);
+    final BigDecimal d = new BigDecimal(denominator);
+
+    if (isNegative(n, d)) {
+      this.numerator = n.abs().multiply(NEGATIVE_ONE);
+      this.denominator = d.abs();
+    }
+    else {
+      this.numerator = n.abs();
+      this.denominator = d.abs();
+    }
+
+    this.isRational = true;
+    this.isComplex = false;
+    this.scale = Rational.DEFAULT_BIG_DECIMAL_SCALE;
+    this.roundingMode = DEFAULT_BIG_DECIMAL_ROUNDING_MODE;
+  }
+
+  /**
+   * Creates a Rational from two {@link BigDecimal} values. This constructor is used internally by Rational.
+   * This is marked not complex.
+   * @param numerator
+   * @param denominator
+   * @param isRational
+   */
+  private Rational(BigDecimal numerator, BigDecimal denominator, boolean isRational) {
+    if (numerator == null || denominator == null) {
+      throw new IllegalArgumentException("Numerator and denominator may not be null.");
+    }
+    else if (denominator.intValue() == 0) {
+      throw new ArithmeticException("Denominator may not be zero.");
+    }
+
+    final BigDecimal n = numerator;
+    final BigDecimal d = denominator;
 
     if (isNegative(n, d)) {
       this.numerator = n.abs().multiply(NEGATIVE_ONE);
@@ -120,39 +151,6 @@ public class Rational extends Number implements Comparable<Rational> {
   }
 
   /**
-   * Creates a Rational from two {@link BigInteger} values. This constructor is used internally by Rational.
-   * @param numerator
-   * @param denominator
-   * @param isRational
-   * @param isComplex
-   */
-  private Rational(BigInteger numerator, BigInteger denominator, boolean isRational, boolean isComplex) {
-    if (numerator == null || denominator == null) {
-      throw new IllegalArgumentException("Numerator and denominator may not be null.");
-    }
-    else if (denominator.intValue() == 0) {
-      throw new ArithmeticException("Denominator may not be zero.");
-    }
-
-    final BigInteger n = numerator;
-    final BigInteger d = denominator;
-
-    if (isNegative(n, d)) {
-      this.numerator = n.abs().multiply(NEGATIVE_ONE);
-      this.denominator = d.abs();
-    }
-    else {
-      this.numerator = n.abs();
-      this.denominator = d.abs();
-    }
-
-    this.isRational = isRational;
-    this.isComplex = isComplex;
-    this.scale = Rational.DEFAULT_BIG_DECIMAL_SCALE;
-    this.roundingMode = DEFAULT_BIG_DECIMAL_ROUNDING_MODE;
-  }
-
-  /**
    * Creates a Rational from two int values. This is marked rational and not complex.
    * @param numerator
    * @param denominator
@@ -162,8 +160,8 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new ArithmeticException("Denominator may not be zero.");
     }
 
-    final BigInteger n = BigInteger.valueOf((long) numerator);
-    final BigInteger d = BigInteger.valueOf((long) denominator);
+    final BigDecimal n = BigDecimal.valueOf(Long.valueOf(numerator));
+    final BigDecimal d = BigDecimal.valueOf(Long.valueOf(denominator));
 
     if (isNegative(n, d)) {
       this.numerator = n.abs().multiply(NEGATIVE_ONE);
@@ -190,8 +188,8 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new ArithmeticException("Denominator may not be zero.");
     }
 
-    final BigInteger n = BigInteger.valueOf(numerator);
-    final BigInteger d = BigInteger.valueOf(denominator);
+    final BigDecimal n = BigDecimal.valueOf(numerator);
+    final BigDecimal d = BigDecimal.valueOf(denominator);
 
     if (isNegative(n, d)) {
       this.numerator = n.abs().multiply(NEGATIVE_ONE);
@@ -240,19 +238,45 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new IllegalArgumentException("Denominator may not be null.");
     }
 
-    this.numerator = numerator.bigIntegerValue();
-    this.denominator = denominator.bigIntegerValue();
+    this.numerator = numerator.bigDecimalValue();
+    this.denominator = denominator.bigDecimalValue();
     this.isRational = numerator.isRational && denominator.isRational;
     this.isComplex = numerator.isComplex && denominator.isComplex;
     this.scale = Math.max(numerator.scale, denominator.scale);
     this.roundingMode = numerator.roundingMode;
   }
 
+  public Rational(BigDecimal numerator, BigDecimal denominator, boolean isRational, boolean isComplex) {
+    if (numerator == null || denominator == null) {
+      throw new IllegalArgumentException("Numerator and denominator may not be null.");
+    }
+    else if (denominator.intValue() == 0) {
+      throw new ArithmeticException("Denominator may not be zero.");
+    }
+
+    final BigDecimal n = numerator;
+    final BigDecimal d = denominator;
+
+    if (isNegative(n, d)) {
+      this.numerator = n.abs().multiply(NEGATIVE_ONE);
+      this.denominator = d.abs();
+    }
+    else {
+      this.numerator = n.abs();
+      this.denominator = d.abs();
+    }
+
+    this.isRational = isRational;
+    this.isComplex = isComplex;
+    this.scale = Rational.DEFAULT_BIG_DECIMAL_SCALE;
+    this.roundingMode = DEFAULT_BIG_DECIMAL_ROUNDING_MODE;
+  }
+
   /**
    * Gets the numerator of this Rational.
    * @return
    */
-  public BigInteger getNumerator() {
+  public BigDecimal getNumerator() {
     return numerator;
   }
 
@@ -260,7 +284,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * Gets the denominator of this rational.
    * @return
    */
-  public BigInteger getDenominator() {
+  public BigDecimal getDenominator() {
     return denominator;
   }
 
@@ -269,7 +293,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   public BigInteger bigIntegerValue() {
-    return (numerator.divide(denominator));
+    return (numerator.divide(denominator)).toBigInteger();
   }
 
   /**
@@ -315,7 +339,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   public BigDecimal bigDecimalValue() {
-    return (new BigDecimal(numerator)).divide(new BigDecimal(denominator), scale, roundingMode);
+    return (numerator.divide(denominator, scale, roundingMode));
   }
 
   /**
@@ -329,7 +353,7 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new IllegalArgumentException("RoundingMode may not be null.");
     }
 
-    return (new BigDecimal(numerator)).divide(new BigDecimal(denominator), newScale, newRoundingMode);
+    return (numerator.divide(denominator, newScale, newRoundingMode));
   }
   
   /**
@@ -367,10 +391,7 @@ public class Rational extends Number implements Comparable<Rational> {
    */
   @Override
   public float floatValue() {
-    final BigDecimal floatingPointNumerator = new BigDecimal(numerator);
-    final BigDecimal floatingPointDenominator = new BigDecimal(denominator);
-
-    return (floatingPointNumerator.divide(floatingPointDenominator, scale, roundingMode)).floatValue();
+    return (numerator.divide(denominator, scale, roundingMode)).floatValue();
   }
 
   /**
@@ -378,10 +399,7 @@ public class Rational extends Number implements Comparable<Rational> {
    */
   @Override
   public double doubleValue() {
-    final BigDecimal floatingPointNumerator = new BigDecimal(numerator);
-    final BigDecimal floatingPointDenominator = new BigDecimal(denominator);
-
-    return (floatingPointNumerator.divide(floatingPointDenominator, scale, roundingMode)).doubleValue();
+    return (numerator.divide(denominator, scale, roundingMode)).doubleValue();
   }
 
   /**
@@ -409,17 +427,31 @@ public class Rational extends Number implements Comparable<Rational> {
 
   /**
    * Determines the greatest common denominator of this and another Rational's denominator.
+   * This diverges from the internal representation of Rational and utilizes the denominator, solely.
    * @param other
    * @return
    */
   public Rational gcd(Rational other) {
-    final BigInteger gcd = this.denominator.gcd(other.denominator);
+    final BigInteger gcd = gcd(denominator, other.denominator);
 
     if (gcd.compareTo(BigInteger.ONE) == 0) {
-      return new Rational(this.denominator.multiply(other.denominator), BigInteger.ONE);
+      return new Rational(this.denominator.multiply(other.denominator), BigDecimal.ONE);
     }
 
     return new Rational(gcd, BigInteger.ONE);
+  }
+  
+  /**
+   * Determines the greatest common denominator of two BigDecimal values.
+   * @param left
+   * @param right
+   * @return
+   */
+  private BigInteger gcd(BigDecimal left, BigDecimal right) {
+    final Rational leftNormalized = Rational.valueOf(left);
+    final Rational rightNormalized = Rational.valueOf(right);
+    
+    return leftNormalized.bigIntegerValue().gcd(rightNormalized.bigIntegerValue());
   }
 
   /**
@@ -427,9 +459,9 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   public Rational reduce() {
-    final BigInteger gcd = this.numerator.gcd(this.denominator);
-    final BigInteger reducedNumerator = this.numerator.divide(gcd);
-    final BigInteger reducedDenominator = this.denominator.divide(gcd);
+    final BigDecimal gcd = new BigDecimal(gcd(numerator, denominator));
+    final BigDecimal reducedNumerator = numerator.divide(gcd);
+    final BigDecimal reducedDenominator = denominator.divide(gcd);
 
     return new Rational(reducedNumerator, reducedDenominator);
   }
@@ -440,7 +472,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   public Rational max(Rational other) {
-    final BigInteger gcd = gcd(other).bigIntegerValue();
+    final BigDecimal gcd = new BigDecimal(gcd(other).bigIntegerValue());
     final Rational newThis = new Rational(
       (this.denominator.equals(gcd) ? this.numerator : this.numerator.multiply(gcd.divide(this.denominator))),
       (this.denominator.equals(gcd) ? this.denominator : gcd)
@@ -463,7 +495,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   public Rational min(Rational other) {
-    final BigInteger gcd = gcd(other).bigIntegerValue();
+    final BigDecimal gcd = new BigDecimal(gcd(other).bigIntegerValue());
     final Rational newThis = new Rational(
       (this.denominator.equals(gcd) ? this.numerator : this.numerator.multiply(gcd.divide(this.denominator))),
       (this.denominator.equals(gcd) ? this.denominator : gcd)
@@ -498,7 +530,7 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new ArithmeticException("Cannot add a complex number to a real number.");
     }
     
-    final BigInteger gcd = gcd(other).reduce().bigIntegerValue();
+    final BigDecimal gcd = new BigDecimal(gcd(other).reduce().bigIntegerValue());
 
     Rational newThis = new Rational(
       (this.denominator.equals(gcd) ? this.numerator : this.numerator.multiply(gcd.divide(this.denominator))),
@@ -522,7 +554,7 @@ public class Rational extends Number implements Comparable<Rational> {
       throw new ArithmeticException("Cannot subtract a complex number from a real number.");
     }
     
-    final BigInteger gcd = gcd(other).bigIntegerValue();
+    final BigDecimal gcd = new BigDecimal(gcd(other).bigIntegerValue());
     final Rational newThis = new Rational(
       (this.denominator.equals(gcd) ? this.numerator : this.numerator.multiply(gcd.divide(this.denominator))),
       (this.denominator.equals(gcd) ? this.denominator : gcd)
@@ -581,6 +613,10 @@ public class Rational extends Number implements Comparable<Rational> {
     return (resultIsNegative ? root.negate() : root);
   }
   
+  /**
+   * Probable loss of precision because I'm using the factory {@link Math#sqrt(double)} method.
+   * @return
+   */
   public Rational sqrt() {
     boolean isComplex = doubleValue() < 0;
     boolean isRational = true;
@@ -588,8 +624,8 @@ public class Rational extends Number implements Comparable<Rational> {
     final double sqrtNumerator = Math.sqrt(numerator.abs().doubleValue());
     final double sqrtDenominator = Math.sqrt(denominator.abs().doubleValue());
     final Rational doubleSqrt = Rational.valueOf(sqrtNumerator).divide(Rational.valueOf(sqrtDenominator));
-    final BigInteger newNumerator = doubleSqrt.numerator;
-    final BigInteger newDenominator = doubleSqrt.denominator;
+    final BigDecimal newNumerator = doubleSqrt.numerator;
+    final BigDecimal newDenominator = doubleSqrt.denominator;
     
     return new Rational(newNumerator, newDenominator, isRational, isComplex);
   }
@@ -721,13 +757,13 @@ public class Rational extends Number implements Comparable<Rational> {
    * @param denominator
    * @return
    */
-  private boolean isNegative(BigInteger numerator, BigInteger denominator) {
+  private boolean isNegative(BigDecimal numerator, BigDecimal denominator) {
     boolean isNegative = false;
 
-    if (numerator.compareTo(BigInteger.ZERO) < 0 && denominator.compareTo(BigInteger.ZERO) > 0) {
+    if (numerator.compareTo(BigDecimal.ZERO) < 0 && denominator.compareTo(BigDecimal.ZERO) > 0) {
       isNegative = true;
     }
-    else if (numerator.compareTo(BigInteger.ZERO) > 0 && denominator.compareTo(BigInteger.ZERO) < 0) {
+    else if (numerator.compareTo(BigDecimal.ZERO) > 0 && denominator.compareTo(BigDecimal.ZERO) < 0) {
       isNegative = true;
     }
 
