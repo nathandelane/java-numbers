@@ -617,6 +617,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * Probable loss of precision because I'm using the factory {@link Math#sqrt(double)} method.
    * @return
    */
+  @Destructive
   public Rational sqrt() {
     boolean isComplex = doubleValue() < 0;
     boolean isRational = true;
