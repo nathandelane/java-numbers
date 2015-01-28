@@ -331,6 +331,20 @@ public class Rational extends Number implements Comparable<Rational> {
 
     return (new BigDecimal(numerator)).divide(new BigDecimal(denominator), newScale, newRoundingMode);
   }
+  
+  /**
+   * Returns the byte value, truncated from division operation.
+   */
+  public byte byteValue() {
+    return (numerator.divide(denominator)).byteValue();
+  }
+  
+  /**
+   * Returns the short value, truncated from division operation.
+   */
+  public short shortValue() {
+    return (numerator.divide(denominator)).shortValue();
+  }
 
   /**
    * Returns integer value, truncated from division operation.
@@ -597,15 +611,41 @@ public class Rational extends Number implements Comparable<Rational> {
   }
 
   /**
-   * Determines whether this and another object are equal to each other.
+   * Determines whether this and another object are equal to each other. This can compare to any 
+   * floating point and integer type, including {@link Rational}, {@link BigInteger}, {@link BigDecimal},
+   * {@link Double}, {@link Float}, {@link Long}, {@link {Integer}, {@link Short}, {@link Byte}. 
    */
   @Override
   public boolean equals(Object other) {
-    if (!(other instanceof Rational)) {
-      return false;
+    if (other instanceof Rational) {
+      return Rational.compareValues(this, (Rational) other);
+    }
+    if (other instanceof BigInteger) {
+      return bigIntegerValue().equals((BigInteger) other);
+    }
+    if (other instanceof BigDecimal) {
+      return bigDecimalValue().equals((BigDecimal) other);
+    }
+    if (other instanceof Double) {
+      return Double.valueOf(doubleValue()).equals((Double) other);
+    }
+    if (other instanceof Float) {
+      return Float.valueOf(floatValue()).equals((Float) other);
+    }
+    if (other instanceof Long) {
+      return Long.valueOf(longValue()).equals((Long) other);
+    }
+    if (other instanceof Integer) {
+      return Integer.valueOf(intValue()).equals((Integer) other);
+    }
+    if (other instanceof Short) {
+      return Short.valueOf(shortValue()).equals((Short) other);
+    }
+    if (other instanceof Byte) {
+      return Byte.valueOf(byteValue()).equals((Byte) other);
     }
     
-    return Rational.compareValues(this, (Rational) other);
+    return false;
   }
   
   /**
