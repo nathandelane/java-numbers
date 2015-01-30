@@ -22,5 +22,13 @@ public class TestSubtract {
     
     assertTrue(r1.subtract(r2).equals(new Rational(2, 3)));
   }
-
+  
+  @Test
+  public void testSubtractANegative() {
+    final Rational r1 = new Rational(1, 2);
+    final Rational r2 = new Rational(-1, 2);
+    
+    assertTrue(r1.subtract(r2).equals(Rational.valueOf(1)));
+  }
+  
 }

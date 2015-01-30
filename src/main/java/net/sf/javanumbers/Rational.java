@@ -167,6 +167,10 @@ public class Rational extends Number implements Comparable<Rational> {
     
     Rational r = new Rational(n, d); // Highly mutable...
     
+    if (r.numerator.equals(BigDecimal.ZERO)) {
+      return Rational.ZERO;
+    }
+    
     if (n.compareTo(new BigDecimal(n.toBigInteger())) != 0 || d.compareTo(new BigDecimal(d.toBigInteger())) != 0) { // A case when n or d are floating point values.
       final Rational rationalN = reduce(n);
       final Rational rationalD = reduce(d);
@@ -177,7 +181,7 @@ public class Rational extends Number implements Comparable<Rational> {
     final BigInteger nInt = r.numerator.toBigInteger();
     final BigInteger dInt = r.denominator.toBigInteger();
     
-    if (dInt.mod(nInt).equals(BigInteger.ZERO)) {
+    if (dInt.compareTo(BigInteger.ZERO) != 0 && dInt.abs().mod(nInt.abs()).equals(BigInteger.ZERO)) {
       final BigInteger result = dInt.divide(nInt);
       
       r = new Rational(BigInteger.ONE, result);
@@ -264,6 +268,14 @@ public class Rational extends Number implements Comparable<Rational> {
   }
   
   /**
+   * Effectively multiplies this Rational by -1.
+   * @return
+   */
+  public Rational negate() {
+    return new Rational(numerator.multiply(BigDecimal.valueOf(-1.0)), denominator);
+  }
+  
+  /**
    * Visible for unit testing, otherwise this is used internally.
    * Transforms a BigDecimal value into a Rational value.
    * @param f
@@ -271,15 +283,24 @@ public class Rational extends Number implements Comparable<Rational> {
    */
   Rational reduce(BigDecimal f) {
     final String[] rationalParts = f.toString().split("[\\.]{1}");
-    final StringBuilder dStr = new StringBuilder("1");
     
     if (rationalParts.length == 2) {
-      for (int i = 0; i < rationalParts[1].length(); i++) {
+      String beforeDecimal = rationalParts[0];
+      String afterDecimal = rationalParts[1];
+      
+      if (beforeDecimal.indexOf("-") > -1 && new BigDecimal(beforeDecimal).compareTo(BigDecimal.ZERO) >= 0) {
+        beforeDecimal = beforeDecimal.replace("-", "");
+        afterDecimal = "-" + afterDecimal;
+      }
+      
+      final StringBuilder dStr = new StringBuilder("1");
+    
+      for (int i = 1; i < afterDecimal.length(); i++) {
         dStr.append("0");
       }
   
       final BigInteger d = new BigInteger(dStr.toString());
-      final BigInteger n = new BigInteger(rationalParts[1]).add(new BigInteger(rationalParts[0]).multiply(d));
+      final BigInteger n = new BigInteger(afterDecimal).add(new BigInteger(beforeDecimal).multiply(d));
       
       return new Rational(n, d);
     }
@@ -355,7 +376,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   static Pair<BigDecimal, BigDecimal> normalizeNegative(BigDecimal n, BigDecimal d) {
-    if (n.compareTo(BigDecimal.ZERO) < 0) {
+    if (d.compareTo(BigDecimal.ZERO) < 0) {
       return new Pair<BigDecimal, BigDecimal>(n.multiply(Rational.BIG_DECIMAL_NEGATIVE_ONE), d.multiply(Rational.BIG_DECIMAL_NEGATIVE_ONE));
     }
     

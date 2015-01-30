@@ -30,4 +30,13 @@ public class TestCompareTo {
     assertTrue(r2.compareTo(r1) > 0);
   }
 
+  @Test
+  public void testSubtractPartFromWholeCompareSmallerParts() {
+    final Rational r1 = Rational.valueOf(1);
+    final Rational r2 = new Rational(1, 5);
+    final Rational c1 = new Rational(8, 10);
+    
+    assertTrue(r1.subtract(r2).compareTo(c1) == 0);
+  }
+
 }

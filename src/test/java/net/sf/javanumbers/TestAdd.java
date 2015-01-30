@@ -29,5 +29,19 @@ public class TestAdd {
     
     assertTrue(r1.add(r2).equals(new Rational(3, 16)));
   }
+  
+  @Test
+  public void testAddZero() {
+    final Rational r1 = new Rational(15, 67);
+    
+    assertTrue(r1.add(Rational.ZERO).equals(r1));
+  }
+  
+  @Test
+  public void testAddOne() {
+    final Rational r1 = Rational.valueOf(-0.5);
+    
+    assertTrue(r1.add(Rational.ONE).equals(r1.negate()));
+  }
 
 }
