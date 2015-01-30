@@ -240,6 +240,23 @@ public class Rational extends Number implements Comparable<Rational> {
   }
   
   /**
+   * Returns the square root of this Rational.
+   * @throws IllegalStateException When precision is lost in converting between BigDecimal and double.
+   * @return
+   */
+  public Rational sqrt() throws IllegalStateException {
+    final Rational r = reduce();
+    
+    if (new BigDecimal(r.numerator.doubleValue()).compareTo(r.numerator) == 0 &&
+        new BigDecimal(r.denominator.doubleValue()).compareTo(r.denominator) == 0) {
+      return new Rational(Math.sqrt(r.numerator.doubleValue()), Math.sqrt(r.denominator.doubleValue()));
+    }
+    
+    throw new IllegalStateException("Cannot maintain precision of number in calculating sqaure roots. "
+      + "This is a shortcoming of this library, because the numerator and denominator are converted to doubles first.");
+  }
+  
+  /**
    * Visible for unit testing, otherwise this is used internally.
    * Transforms a BigDecimal value into a Rational value.
    * @param f
