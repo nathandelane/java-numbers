@@ -197,8 +197,8 @@ public class Rational extends Number implements Comparable<Rational> {
     }
     
     final BigDecimal lcm = new BigDecimal(lcm(this.reduce().denominator.toBigInteger(), r.reduce().denominator.toBigInteger()));
-    final BigDecimal leftNumerator = this.numerator.multiply(this.denominator.divide(lcm));
-    final BigDecimal rightNumerator = r.numerator.multiply(r.denominator.divide(lcm));
+    final BigDecimal leftNumerator = this.numerator.multiply(lcm.divide(this.denominator));
+    final BigDecimal rightNumerator = r.numerator.multiply(lcm.divide(r.denominator));
     
     return new Rational(leftNumerator.add(rightNumerator), lcm);
   }
@@ -300,7 +300,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   BigInteger lcm(BigInteger left, BigInteger right) {
-    if (left.mod(right).compareTo(BigInteger.ZERO) == 0 || right.mod(left).compareTo(BigInteger.ZERO) == 0) {
+    if (left.abs().mod(right.abs()).compareTo(BigInteger.ZERO) == 0 || right.abs().mod(left.abs()).compareTo(BigInteger.ZERO) == 0) {
       return left.subtract(right).compareTo(BigInteger.ZERO) > 0 ? left : right;
     }
     
@@ -308,9 +308,10 @@ public class Rational extends Number implements Comparable<Rational> {
   }
 
   @Override
-  public int compareTo(Rational arg0) {
-    // TODO Auto-generated method stub
-    return 0;
+  public int compareTo(Rational r) {
+    final BigDecimal subtractionResult = reduce().subtract(r.reduce()).bigDecimalValue();
+    
+    return subtractionResult.compareTo(BigDecimal.ZERO);
   }
   
   public BigDecimal bigDecimalValue() {
