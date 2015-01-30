@@ -192,13 +192,20 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   public Rational add(Rational r) {
-    if (this.denominator.equals(r.denominator)) {
-      return new Rational(this.numerator.add(r.numerator), this.denominator);
+    Rational newThis = this.reduce();
+    Rational otherR = r.reduce();
+    
+    if (newThis.denominator.equals(otherR.denominator)) {
+      return new Rational(newThis.numerator.add(otherR.numerator), newThis.denominator);
     }
     
-    final BigDecimal lcm = new BigDecimal(lcm(this.reduce().denominator.toBigInteger(), r.reduce().denominator.toBigInteger()));
-    final BigDecimal leftNumerator = this.numerator.multiply(lcm.divide(this.denominator));
-    final BigDecimal rightNumerator = r.numerator.multiply(lcm.divide(r.denominator));
+    if (newThis.denominator.equals(BigDecimal.ONE)) {
+      newThis = new Rational(newThis.numerator.multiply(otherR.denominator), newThis.denominator.multiply(otherR.denominator));
+    }
+    
+    final BigDecimal lcm = new BigDecimal(lcm(newThis.denominator.toBigInteger(), otherR.denominator.toBigInteger()));
+    final BigDecimal leftNumerator = newThis.numerator.multiply(lcm.divide(newThis.denominator));
+    final BigDecimal rightNumerator = otherR.numerator.multiply(lcm.divide(otherR.denominator));
     
     return new Rational(leftNumerator.add(rightNumerator), lcm);
   }
@@ -365,7 +372,12 @@ public class Rational extends Number implements Comparable<Rational> {
   static boolean compareValues(Rational left, Rational right) {
     final Rational reducedLeft = left.reduce();
     final Rational reducedRight = right.reduce();
-    return (reducedLeft.numerator.equals(reducedRight.numerator) && reducedLeft.denominator.equals(reducedRight.denominator));
+    
+    final int numeratorScale = Math.max(reducedLeft.numerator.scale(), reducedRight.numerator.scale());
+    final int denominatorScale = Math.max(reducedLeft.denominator.scale(), reducedRight.denominator.scale());
+    
+    return (reducedLeft.numerator.setScale(numeratorScale).equals(reducedRight.numerator.setScale(numeratorScale)) && 
+        reducedLeft.denominator.setScale(denominatorScale).equals(reducedRight.denominator.setScale(denominatorScale)));
   }
   
   /**
