@@ -344,31 +344,31 @@ public class Rational extends Number implements Comparable<Rational> {
   }
   
   public BigDecimal bigDecimalValue() {
-    return numerator.divide(denominator);
+    return numerator.divide(denominator, scale, roundingMode);
   }
   
   public BigInteger bigIntegerValue() {
-    return numerator.divide(denominator).toBigInteger();
+    return numerator.divide(denominator, scale, roundingMode).toBigInteger();
   }
   
   @Override
   public double doubleValue() {
-    return numerator.divide(denominator).doubleValue();
+    return numerator.divide(denominator, scale, roundingMode).doubleValue();
   }
   
   @Override
   public float floatValue() {
-    return numerator.divide(denominator).floatValue();
+    return numerator.divide(denominator, scale, roundingMode).floatValue();
   }
   
   @Override
   public int intValue() {
-    return numerator.divide(denominator).intValue();
+    return numerator.divide(denominator, scale, roundingMode).intValue();
   }
   
   @Override
   public long longValue() {
-    return numerator.divide(denominator).longValue();
+    return numerator.divide(denominator, scale, roundingMode).longValue();
   }
   
   /**
@@ -399,7 +399,8 @@ public class Rational extends Number implements Comparable<Rational> {
     final int denominatorScale = Math.max(reducedLeft.denominator.scale(), reducedRight.denominator.scale());
     
     return (reducedLeft.numerator.setScale(numeratorScale).equals(reducedRight.numerator.setScale(numeratorScale)) && 
-        reducedLeft.denominator.setScale(denominatorScale).equals(reducedRight.denominator.setScale(denominatorScale)));
+        reducedLeft.denominator.setScale(denominatorScale).equals(reducedRight.denominator.setScale(denominatorScale))) ||
+        (reducedLeft.doubleValue() == reducedRight.doubleValue());
   }
   
   /**
