@@ -255,6 +255,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @throws IllegalStateException When precision is lost in converting between BigDecimal and double.
    * @return
    */
+  @Destructive("This uses double values to find square roots, and throws an IllegalStateException if it can't, but it may still be destructive.")
   public Rational sqrt() throws IllegalStateException {
     final Rational r = reduce();
     
