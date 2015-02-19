@@ -193,7 +193,8 @@ public class Rational extends Number implements Comparable<Rational> {
     final BigDecimal n = numerator;
     final BigDecimal d = denominator;
     
-    Rational r = new Rational(n, d); // Highly mutable...
+    // Warning: the following variable r is reused throughout this method.
+    Rational r = new Rational(n, d);
     
     if (r.numerator.equals(BigDecimal.ZERO)) {
       return Rational.ZERO;
