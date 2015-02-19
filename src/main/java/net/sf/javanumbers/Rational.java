@@ -125,41 +125,69 @@ public class Rational extends Number implements Comparable<Rational> {
     this.roundingMode = roundingMode;
   }
   
+  /**
+   * Not currently used, such that all Rationals are rational.
+   * @return whether this Rational is actually rational.
+   */
   public boolean isRational() {
     return isRational;
   }
   
+  /**
+   * Not currently used, such that all Rationals are not complex.
+   * @return whether this Rational is a complex number, meaning it has an imaginary part.
+   */
   public boolean isComplex() {
     return isComplex;
   }
   
+  /**
+   * @return whether this Rational is less than zero.
+   */
   public boolean isNegative() {
     return numerator.compareTo(BigDecimal.ZERO) < 0;
   }
   
+  /**
+   * @return the current scale for this Rational.
+   */
   public int scale() {
     return scale;
   }
   
+  /**
+   * Sets the scale, or number of retained decimal places, for this Rational.
+   * @param scale the number of decimal places retained for operations on this Rational.
+   * @return A new Rational with the newly set scale.
+   */
   public Rational setScale(int scale) {
     this.scale = scale;
     
     return new Rational(this);
   }
   
+  /**
+   * @return the current {@link RoundingMode} for this Rational.
+   */
   public RoundingMode roundingMode() {
     return roundingMode;
   }
   
+  /**
+   * Sets the {@link RoundingMode} for the division operations of this Rational's numerator and denominator. 
+   * @param roundingMode
+   * @return A new Rational with the newly set rounding mode.
+   */
   public Rational setRoundingMode(RoundingMode roundingMode) {
-    this.roundingMode = roundingMode;
+    final Rational newRational = new Rational(this);
+    newRational.roundingMode = roundingMode;
     
-    return new Rational(this);
+    return newRational;
   }
   
   /**
    * Reduces this Rational to an integer-based rational, and attempts to reduce by division.
-   * @return
+   * @return A new Rational reduced.
    */
   public Rational reduce() {
     final BigDecimal n = numerator;
@@ -193,8 +221,9 @@ public class Rational extends Number implements Comparable<Rational> {
   /**
    * Adds this to another Rational value, resulting in a single Rational value.
    * @param r
-   * @return
+   * @return A new Rational containing the value of the sum of this and r.
    */
+  @Destructive("Uses LCM of the denominators which must be converted to BigIntegers in order to operate.")
   public Rational add(Rational r) {
     Rational newThis = this.reduce();
     Rational otherR = r.reduce();
@@ -217,7 +246,7 @@ public class Rational extends Number implements Comparable<Rational> {
   /**
    * Subtracts another Rational value from this, resulting in a single Rational value.
    * @param r
-   * @return
+   * @return A new Rational containing the value of the difference of this and r.
    */
   public Rational subtract(Rational r) {
     return add(new Rational(r.numerator.multiply(Rational.BIG_DECIMAL_NEGATIVE_ONE), r.denominator));
@@ -226,7 +255,7 @@ public class Rational extends Number implements Comparable<Rational> {
   /**
    * Multiplies this and another Rational value, resulting in a single Rational value.
    * @param r
-   * @return
+   * @return A new Rational containing the value of the product of this and r.
    */
   public Rational multiply(Rational r) {
     return new Rational(
@@ -242,7 +271,7 @@ public class Rational extends Number implements Comparable<Rational> {
   /**
    * Divides this Rational by another Rational, resulting in a single Rational value.
    * @param r
-   * @return
+   * @return a new Rational containing the value of the quotient of this and r.
    */
   public Rational divide(Rational r) {
     final Rational invertedR = invert(r);
@@ -253,7 +282,7 @@ public class Rational extends Number implements Comparable<Rational> {
   /**
    * Returns the square root of this Rational.
    * @throws IllegalStateException When precision is lost in converting between BigDecimal and double.
-   * @return
+   * @return the square root of this Rational as a new Rational.
    */
   @Destructive("This uses double values to find square roots, and throws an IllegalStateException if it can't, but it may still be destructive.")
   public Rational sqrt() throws IllegalStateException {
@@ -270,7 +299,7 @@ public class Rational extends Number implements Comparable<Rational> {
   
   /**
    * Effectively multiplies this Rational by -1.
-   * @return
+   * @return the negation of this Rational as a new Rational.
    */
   public Rational negate() {
     return new Rational(numerator.multiply(BigDecimal.valueOf(-1.0)), denominator);
@@ -280,7 +309,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * Visible for unit testing, otherwise this is used internally.
    * Transforms a BigDecimal value into a Rational value.
    * @param f
-   * @return
+   * @return this Rational reduced, or simplified, as a new Rational.
    */
   Rational reduce(BigDecimal f) {
     final String[] rationalParts = f.toString().split("[\\.]{1}");
@@ -296,7 +325,7 @@ public class Rational extends Number implements Comparable<Rational> {
       
       final StringBuilder dStr = new StringBuilder("1");
     
-      for (int i = 1; i < afterDecimal.length(); i++) {
+      for (int i = 0; i < afterDecimal.replace("-", "").length(); i++) {
         dStr.append("0");
       }
   
@@ -313,7 +342,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * Visible for unit testing, otherwise this is used internally.
    * Inverts a rational.
    * @param r
-   * @return
+   * @return this Rational inverted or flipped as a new Rational.
    */
   Rational invert(Rational r) {
     final BigDecimal n = r.denominator;
@@ -326,9 +355,10 @@ public class Rational extends Number implements Comparable<Rational> {
    * Visible for unit testing, otherwise this is used internally.
    * Calculates the least common multiple of this and another
    * @param r
-   * @return
+   * @return the least common multiple of two {@link BigInteger} values.
    */
-  BigInteger lcm(BigInteger left, BigInteger right) {
+  @Destructive("Uses BigInteger values to find the least common multiple of potentially BigDecimal values.")
+  static BigInteger lcm(BigInteger left, BigInteger right) {
     if (left.abs().mod(right.abs()).compareTo(BigInteger.ZERO) == 0 || right.abs().mod(left.abs()).compareTo(BigInteger.ZERO) == 0) {
       return left.subtract(right).compareTo(BigInteger.ZERO) > 0 ? left : right;
     }
@@ -343,32 +373,58 @@ public class Rational extends Number implements Comparable<Rational> {
     return subtractionResult.compareTo(BigDecimal.ZERO);
   }
   
+  @Destructive("This will truncate to the number of decimal places set by the scale the quotient of the numerator and the denominator.")
   public BigDecimal bigDecimalValue() {
-    return numerator.divide(denominator, scale, roundingMode);
+    try {
+      return numerator.divide(denominator);
+    } catch (ArithmeticException e) {
+      return numerator.divide(denominator, scale, roundingMode);
+    }
   }
   
+  @Destructive("This will truncate any decimal portion of the quotient of the numerator and the denominator.")
   public BigInteger bigIntegerValue() {
-    return numerator.divide(denominator, scale, roundingMode).toBigInteger();
+    try {
+      return numerator.divide(denominator).toBigInteger();
+    } catch (ArithmeticException e) {
+      return numerator.divide(denominator, scale, roundingMode).toBigInteger();
+    }
   }
   
+  @Destructive("This will truncate any decimal portion to the limit of decimal places set by the JVM for double values.")
   @Override
   public double doubleValue() {
-    return numerator.divide(denominator, scale, roundingMode).doubleValue();
+    try {
+      return numerator.divide(denominator).doubleValue();
+    } catch (ArithmeticException e) {
+      return numerator.divide(denominator, scale, roundingMode).doubleValue();
+    }
   }
   
+  @Destructive("This will truncate any decimal portion to the limit of decimal places set by the JVM for float values.")
   @Override
   public float floatValue() {
     return numerator.divide(denominator, scale, roundingMode).floatValue();
   }
   
+  @Destructive("This will truncate any decimal portion of the quotient of the numerator and the denominator.")
   @Override
   public int intValue() {
-    return numerator.divide(denominator, scale, roundingMode).intValue();
+    try {
+      return numerator.divide(denominator).intValue();
+    } catch (ArithmeticException e) {
+      return numerator.divide(denominator, scale, roundingMode).intValue();
+    }
   }
   
+  @Destructive("This will truncate any decimal portion of the quotient of the numerator and the denominator.")
   @Override
   public long longValue() {
-    return numerator.divide(denominator, scale, roundingMode).longValue();
+    try {
+      return numerator.divide(denominator).longValue();
+    } catch (ArithmeticException e) {
+      return numerator.divide(denominator, scale, roundingMode).longValue();
+    }
   }
   
   /**
