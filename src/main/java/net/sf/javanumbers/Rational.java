@@ -496,7 +496,7 @@ public class Rational extends Number implements Comparable<Rational> {
   
   public static Rational valueOf(String s) {
     if (s == null) {
-      throw new NullPointerException("Argument may not be null.");
+      throw new NullPointerException("Value may not be null.");
     }
     if (FLOATING_POINT_PATTERN.matcher(s).matches()) {
       return Rational.valueOf(new BigDecimal(s));
