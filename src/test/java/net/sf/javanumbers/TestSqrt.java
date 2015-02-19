@@ -20,7 +20,7 @@ public class TestSqrt {
     final double sqrtOfOneFifth = Math.sqrt(1.0 / 5.0);
     final double sqrtOfR = r.sqrt().doubleValue();
     
-    assertTrue(r.sqrt().equals(Rational.valueOf(sqrtOfOneFifth)));
+    assertTrue(sqrtOfR == Rational.valueOf(sqrtOfOneFifth).doubleValue());
   }
 
 }
