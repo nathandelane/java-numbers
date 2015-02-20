@@ -434,7 +434,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return
    */
   static Pair<BigDecimal, BigDecimal> normalizeNegative(BigDecimal n, BigDecimal d) {
-    if (d.compareTo(BigDecimal.ZERO) < 0) {
+    if (d.compareTo(BigDecimal.ZERO) < 0 && n.compareTo(BigDecimal.ZERO) > 0) {
       return new Pair<BigDecimal, BigDecimal>(n.multiply(Rational.BIG_DECIMAL_NEGATIVE_ONE), d.multiply(Rational.BIG_DECIMAL_NEGATIVE_ONE));
     }
     

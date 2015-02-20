@@ -41,4 +41,11 @@ public class TestOne {
     assertTrue(Rational.ONE.equals(new Rational(Character.MAX_VALUE, Character.MAX_VALUE)));
   }
   
+  @Test
+  public void testNegativeNormalizedEqualsOne() {
+    final Rational r = new Rational(-1, -1);
+    
+    assertTrue(r.equals(1));
+  }
+  
 }
