@@ -37,8 +37,8 @@ import org.javatuples.Pair;
  */
 public class Rational extends Number implements Comparable<Rational> {
 
-  public static final Rational ONE = Rational.valueOf(1);
-  public static final Rational ZERO = Rational.valueOf(0);
+  public static final Rational ONE = new Rational(1, 1);
+  public static final Rational ZERO = new Rational(0, 1);
 
   private static final long serialVersionUID = -6831475929480288445L;
   
