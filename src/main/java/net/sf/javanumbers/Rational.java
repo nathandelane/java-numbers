@@ -44,7 +44,7 @@ public class Rational extends Number implements Comparable<Rational> {
   
   private static final BigDecimal BIG_DECIMAL_NEGATIVE_ONE = new BigDecimal("-1.0");
   private static final Pattern RATIONAL_PATTERN = Pattern.compile("^([\\-]{0,1}[\\d]+)/([\\-]{0,1}[\\d]+)$");
-  private static final Pattern FLOATING_POINT_PATTERN = Pattern.compile("([\\-]{0,1}[\\d]*)\\.([\\d]+)$");
+  private static final Pattern FLOATING_POINT_PATTERN = Pattern.compile("[\\-]{0,1}([\\d]*)(\\.([\\d]+)){0,1}$");
   private static final int DEFAULT_BIG_DECIMAL_SCALE = 32;
   private static final RoundingMode DEFAULT_BIG_DECIMAL_ROUNDING_MODE = RoundingMode.HALF_UP;
 
@@ -190,30 +190,27 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return A new Rational reduced.
    */
   public Rational reduce() {
-    final BigDecimal n = numerator;
-    final BigDecimal d = denominator;
-    
     // Warning: the following variable r is reused throughout this method.
-    Rational r = new Rational(n, d);
+    final Rational r = new Rational(this);
     
+    // Case when Rational equals Rational.ZERO, i.e. 0/1
     if (r.numerator.equals(BigDecimal.ZERO)) {
       return Rational.ZERO;
     }
     
-    if (n.compareTo(new BigDecimal(n.toBigInteger())) != 0 || d.compareTo(new BigDecimal(d.toBigInteger())) != 0) { // A case when n or d are floating point values.
-      final Rational rationalN = reduce(n);
-      final Rational rationalD = reduce(d);
-      
-      r = rationalN.divide(rationalD);
+    // Case when n or d are floating point values.
+    if (r.numerator.scale() > 0 || r.denominator.scale() > 0) {
+      return reduce(r.numerator).divide(reduce(r.denominator));
     }
     
     final BigInteger nInt = r.numerator.toBigInteger();
     final BigInteger dInt = r.denominator.toBigInteger();
     
+    // Case when denominator is not ZERO and abs(denominator) % abs(numerator) == ZERO
     if (dInt.compareTo(BigInteger.ZERO) != 0 && dInt.abs().mod(nInt.abs()).equals(BigInteger.ZERO)) {
       final BigInteger result = dInt.divide(nInt);
       
-      r = new Rational(BigInteger.ONE, result);
+      return new Rational(BigInteger.ONE, result);
     }
     
     return r;
@@ -479,22 +476,24 @@ public class Rational extends Number implements Comparable<Rational> {
   }
   
   public static Rational valueOf(int i) {
-    return new Rational(i, 1);
+    return Rational.valueOf(BigInteger.valueOf(i));
   }
   
   public static Rational valueOf(long i) {
-    return new Rational(i, 1);
+    return Rational.valueOf(BigInteger.valueOf(i));
   }
   
   public static Rational valueOf(double f) {
-    return new Rational(f, 1.0);
+    return Rational.valueOf(BigDecimal.valueOf(f));
   }
   
   public static Rational valueOf(float f) {
-    return new Rational(f, 1.0);
+    return Rational.valueOf(BigDecimal.valueOf(f));
   }
   
   public static Rational valueOf(String s) {
+    final int fractionHasAtMostParts = 2;
+    
     if (s == null) {
       throw new NullPointerException("Value may not be null.");
     }
@@ -504,11 +503,15 @@ public class Rational extends Number implements Comparable<Rational> {
     if (RATIONAL_PATTERN.matcher(s).matches()) {
       final String[] rationalParts = s.split("[/]{1}");
       
-      if (rationalParts.length != 2) {
+      if (rationalParts.length > 2) {
         throw new NumberFormatException("Rational value was not well formatted as [-]x/[-]y.");
       }
-      
-      return new Rational(new BigDecimal(rationalParts[0]), new BigDecimal(rationalParts[1]));
+      else if (rationalParts.length == fractionHasAtMostParts) {
+        return new Rational(new BigDecimal(rationalParts[0]), new BigDecimal(rationalParts[1]));
+      }
+      else {
+        return new Rational(new BigDecimal(rationalParts[0]), BigDecimal.ONE);
+      }
     }
     
     throw new NumberFormatException("Rational value was not well formatted as [-]x/[-]y.");

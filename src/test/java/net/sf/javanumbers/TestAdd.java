@@ -43,5 +43,13 @@ public class TestAdd {
     
     assertTrue(r1.add(Rational.ONE).equals(r1.negate()));
   }
+  
+  @Test
+  public void testAddDecimals() {
+    final Rational r1 = Rational.valueOf(3.152);
+    final Rational r2 = Rational.valueOf(1.848);
+    
+    assertTrue(r1.add(r2).equals(5));
+  }
 
 }

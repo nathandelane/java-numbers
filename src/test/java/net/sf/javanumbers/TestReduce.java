@@ -14,4 +14,25 @@ public class TestReduce {
     assertTrue(reducedR.equals(new Rational(1, 8)));
   }
   
+  @Test
+  public void testZero() {
+    final Rational r = new Rational(0, 2);
+    
+    assertTrue(r.reduce().equals(0));
+  }
+  
+  @Test
+  public void testReduceDecimalNumerator() {
+    final Rational r = new Rational(0.125, 1.0);
+    
+    assertTrue(r.reduce().equals(0.125));
+  }
+  
+  @Test
+  public void testReduceDecimalDenominator() {
+    final Rational r = new Rational(1, 0.25);
+    
+    assertTrue(r.reduce().equals(Rational.valueOf(4)));
+  }
+  
 }
