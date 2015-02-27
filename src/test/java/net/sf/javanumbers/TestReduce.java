@@ -35,4 +35,18 @@ public class TestReduce {
     assertTrue(r.reduce().equals(Rational.valueOf(4)));
   }
   
+  @Test
+  public void testReduceToImproper() {
+    final Rational r = Rational.valueOf(0.125);
+    
+    assertTrue(r.reduce().toString().equals("1/8"));
+  }
+  
+  @Test
+  public void testReduceToImproper2() {
+    final Rational r = new Rational(6, 63);
+    
+    assertTrue(r.reduce().toString().equals("2/21"));
+  }
+  
 }

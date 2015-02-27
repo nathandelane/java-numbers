@@ -126,6 +126,22 @@ public class Rational extends Number implements Comparable<Rational> {
   }
   
   /**
+   * Package local method to get the numerator of this Rational.
+   * @return
+   */
+  BigDecimal getNumerator() {
+    return new BigDecimal(numerator.toString());
+  }
+  
+  /**
+   * Package local method to get the denominator of this Rational.
+   * @return
+   */
+  BigDecimal getDenominator() {
+    return new BigDecimal(denominator.toString());
+  }
+  
+  /**
    * Not currently used, such that all Rationals are rational.
    * @return whether this Rational is actually rational.
    */
@@ -190,30 +206,7 @@ public class Rational extends Number implements Comparable<Rational> {
    * @return A new Rational reduced.
    */
   public Rational reduce() {
-    // Warning: the following variable r is reused throughout this method.
-    final Rational r = new Rational(this);
-    
-    // Case when Rational equals Rational.ZERO, i.e. 0/1
-    if (r.numerator.equals(BigDecimal.ZERO)) {
-      return Rational.ZERO;
-    }
-    
-    // Case when n or d are floating point values.
-    if (r.numerator.scale() > 0 || r.denominator.scale() > 0) {
-      return reduce(r.numerator).divide(reduce(r.denominator));
-    }
-    
-    final BigInteger nInt = r.numerator.toBigInteger();
-    final BigInteger dInt = r.denominator.toBigInteger();
-    
-    // Case when denominator is not ZERO and abs(denominator) % abs(numerator) == ZERO
-    if (dInt.compareTo(BigInteger.ZERO) != 0 && dInt.abs().mod(nInt.abs()).equals(BigInteger.ZERO)) {
-      final BigInteger result = dInt.divide(nInt);
-      
-      return new Rational(BigInteger.ONE, result);
-    }
-    
-    return r;
+    return Reducer.reduce(this);
   }
   
   /**
@@ -234,7 +227,7 @@ public class Rational extends Number implements Comparable<Rational> {
       newThis = new Rational(newThis.numerator.multiply(otherR.denominator), newThis.denominator.multiply(otherR.denominator));
     }
     
-    final BigDecimal lcm = new BigDecimal(lcm(newThis.denominator.toBigInteger(), otherR.denominator.toBigInteger()));
+    final BigDecimal lcm = new BigDecimal(Multiples.leastCommonMultiple(newThis.denominator.toBigInteger(), otherR.denominator.toBigInteger()));
     final BigDecimal leftNumerator = newThis.numerator.multiply(lcm.divide(newThis.denominator));
     final BigDecimal rightNumerator = otherR.numerator.multiply(lcm.divide(otherR.denominator));
     
@@ -305,65 +298,17 @@ public class Rational extends Number implements Comparable<Rational> {
   
   /**
    * Visible for unit testing, otherwise this is used internally.
-   * Transforms a BigDecimal value into a Rational value.
-   * @param f
-   * @return this Rational reduced, or simplified, as a new Rational.
-   */
-  Rational reduce(BigDecimal f) {
-    final String[] rationalParts = f.toString().split("[\\.]{1}");
-    
-    if (rationalParts.length == 2) {
-      String beforeDecimal = rationalParts[0];
-      String afterDecimal = rationalParts[1];
-      
-      if (beforeDecimal.indexOf("-") > -1 && new BigDecimal(beforeDecimal).compareTo(BigDecimal.ZERO) >= 0) {
-        beforeDecimal = beforeDecimal.replace("-", "");
-        afterDecimal = "-" + afterDecimal;
-      }
-      
-      final StringBuilder dStr = new StringBuilder("1");
-    
-      for (int i = 0; i < afterDecimal.replace("-", "").length(); i++) {
-        dStr.append("0");
-      }
-  
-      final BigInteger d = new BigInteger(dStr.toString());
-      final BigInteger n = new BigInteger(afterDecimal).add(new BigInteger(beforeDecimal).multiply(d));
-      
-      return new Rational(n, d);
-    }
-    
-    return new Rational(f, BigDecimal.ONE);
-  }
-  
-  /**
-   * Visible for unit testing, otherwise this is used internally.
    * Inverts a rational.
    * @param r
    * @return this Rational inverted or flipped as a new Rational.
    */
-  Rational invert(Rational r) {
+  public Rational invert(Rational r) {
     final BigDecimal n = r.denominator;
     final BigDecimal d = r.numerator;
     
     return new Rational(n, d);
   }
   
-  /**
-   * Visible for unit testing, otherwise this is used internally.
-   * Calculates the least common multiple of this and another
-   * @param r
-   * @return the least common multiple of two {@link BigInteger} values.
-   */
-  @Destructive("Uses BigInteger values to find the least common multiple of potentially BigDecimal values.")
-  static BigInteger lcm(BigInteger left, BigInteger right) {
-    if (left.abs().mod(right.abs()).compareTo(BigInteger.ZERO) == 0 || right.abs().mod(left.abs()).compareTo(BigInteger.ZERO) == 0) {
-      return left.subtract(right).compareTo(BigInteger.ZERO) > 0 ? left : right;
-    }
-    
-    return left.multiply(right);
-  }
-
   @Override
   public int compareTo(Rational r) {
     final BigDecimal subtractionResult = reduce().subtract(r.reduce()).bigDecimalValue();
