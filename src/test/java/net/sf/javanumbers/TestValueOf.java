@@ -24,8 +24,15 @@ public class TestValueOf {
   }
   
   @Test
-  public void testValueOfString() {
+  public void testValueOfStringWholeNumber() {
     final String s = "123";
+    
+    assertTrue(Rational.valueOf(s).equals(new BigDecimal(s)));
+  }
+  
+  @Test
+  public void testValueOfStringFloatingPointNumber() {
+    final String s = "0.968";
     
     assertTrue(Rational.valueOf(s).equals(new BigDecimal(s)));
   }

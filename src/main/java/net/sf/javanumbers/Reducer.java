@@ -57,7 +57,7 @@ abstract class Reducer {
    * @param f
    * @return
    */
-  private static Rational reduceFloatingPointValue(BigDecimal f) {
+  static Rational reduceFloatingPointValue(BigDecimal f) {
     final String[] rationalParts = f.toString().split("[\\.]{1}");
     
     if (rationalParts.length == 2) {
