@@ -1,4 +1,4 @@
-package net.sf.javanumbers;
+package net.sf.javanumbers.java;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -28,21 +28,35 @@ import java.math.BigInteger;
  * based on {@link BigInteger} and {@link BigDecimal}.
  * </p>
  *
- * Internal class used to find the least common multiples and multiples of two values.
- *
+ * Factory class for consistently creating new {@link BigInteger} objects.
+ * 
  * @author nathandelane &lt;nathan.david.lane@gmail.com&gt;
  *
  */
-abstract class Multiples {
+public class BigIntegerFactory {
 
-  /**
-   * Finds least common multiple of two values.
-   * @param left {@link BigInteger} value
-   * @param right {@link BigInteger} value
-   * @return {@link BigInteger} value representing the least common multiple
-   */
-  public static BigInteger leastCommonMultiple(BigInteger left, BigInteger right) {
-    return left.multiply(right).divide(Factors.greatestCommonFactor(left, right));
+  public static BigInteger create(String value) {
+    return new BigInteger(value);
   }
-  
+
+  public static BigInteger create(BigInteger value) {
+    return new BigInteger(value.toString());
+  }
+
+  public static BigInteger create(long value) {
+    return BigInteger.valueOf(value);
+  }
+
+  public static BigInteger create(int value) {
+    return BigInteger.valueOf(value);
+  }
+
+  public static BigInteger create(short value) {
+    return BigInteger.valueOf(value);
+  }
+
+  public static BigInteger create(byte value) {
+    return BigInteger.valueOf(value);
+  }
+
 }

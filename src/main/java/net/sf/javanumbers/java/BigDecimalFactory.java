@@ -1,4 +1,4 @@
-package net.sf.javanumbers;
+package net.sf.javanumbers.java;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,22 +27,44 @@ import java.math.BigInteger;
  * This class can be used to work with rational numbers, or fractions, in a non-destructive deterministic manner. It is
  * based on {@link BigInteger} and {@link BigDecimal}.
  * </p>
- *
- * Internal class used to find the least common multiples and multiples of two values.
+ * 
+ * Factory class for consistently creating new {@link BigDecimal} objects.
  *
  * @author nathandelane &lt;nathan.david.lane@gmail.com&gt;
  *
  */
-abstract class Multiples {
-
-  /**
-   * Finds least common multiple of two values.
-   * @param left {@link BigInteger} value
-   * @param right {@link BigInteger} value
-   * @return {@link BigInteger} value representing the least common multiple
-   */
-  public static BigInteger leastCommonMultiple(BigInteger left, BigInteger right) {
-    return left.multiply(right).divide(Factors.greatestCommonFactor(left, right));
+public abstract class BigDecimalFactory {
+  
+  public static BigDecimal create(String value) {
+    return new BigDecimal(value);
+  }
+  
+  public static BigDecimal create(BigInteger value) {
+    return new BigDecimal(value);
+  }
+  
+  public static BigDecimal create(double value) {
+    return BigDecimal.valueOf(value);
+  }
+  
+  public static BigDecimal create(long value) {
+    return BigDecimal.valueOf(value);
+  }
+  
+  public static BigDecimal create(float value) {
+    return new BigDecimal(value);
+  }
+  
+  public static BigDecimal create(int value) {
+    return new BigDecimal(value);
+  }
+  
+  public static BigDecimal create(short value) {
+    return new BigDecimal(value);
+  }
+  
+  public static BigDecimal create(byte value) {
+    return new BigDecimal(value);
   }
   
 }

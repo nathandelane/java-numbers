@@ -412,30 +412,65 @@ public class Rational extends Number implements Comparable<Rational> {
     }
   }
   
+  /**
+   * Parses the value of a {@link BigDecimal} into a {@link Rational}
+   * @param f {@link BigDecimal} value
+   * @return {@link Rational} value
+   */
   public static Rational valueOf(BigDecimal f) {
     return new Rational(f, BigDecimal.ONE);
   }
   
+  /**
+   * Parses the value of a {@link BigInteger} into a {@link Rational}
+   * @param i {@link BigInteger} value
+   * @return {@link Rational} value
+   */
   public static Rational valueOf(BigInteger i) {
     return new Rational(i, BigInteger.ONE);
   }
   
+  /**
+   * Parses the value of a <code>int</code> into a {@link Rational}
+   * @param i int value
+   * @return {@link Rational} value
+   */
   public static Rational valueOf(int i) {
     return Rational.valueOf(BigInteger.valueOf(i));
   }
   
+  /**
+   * Parses the value of a <code>long</code> into a {@link Rational}
+   * @param i long value
+   * @return {@link Rational} value
+   */
   public static Rational valueOf(long i) {
     return Rational.valueOf(BigInteger.valueOf(i));
   }
   
+  /**
+   * Parses the value of a <code>double</code> into a {@link Rational}
+   * @param f double value
+   * @return {@link Rational} value
+   */
   public static Rational valueOf(double f) {
     return Rational.valueOf(BigDecimal.valueOf(f));
   }
   
+  /**
+   * Parses the value of a <code>float</code> into a {@link Rational}
+   * @param f float value
+   * @return {@link Rational} value
+   */
   public static Rational valueOf(float f) {
     return Rational.valueOf(BigDecimal.valueOf(f));
   }
   
+  /**
+   * Parses a {@link String} value into a {@link Rational}
+   * @param s {@link String} value
+   * @return {@link Rational} value
+   */
   public static Rational valueOf(String s) {
     final int fractionHasAtMostParts = 2;
     
