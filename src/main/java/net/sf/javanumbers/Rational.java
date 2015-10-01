@@ -22,10 +22,10 @@ import org.javatuples.Pair;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ * </p>
  * <p>
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
  * </p>
  * <p>
  * This class can be used to work with rational numbers, or fractions, in a non-destructive deterministic manner. It is
@@ -109,12 +109,12 @@ public class Rational extends Number implements Comparable<Rational> {
   
   /**
    * Private constructor used internally by Rational.
-   * @param numerator
-   * @param denominator
-   * @param isRational
-   * @param isComplex
-   * @param scale
-   * @param roundingMode
+   * @param numerator the numerator <i>n</i> of this rational n/d
+   * @param denominator the denominator <i>d</i> of this rational n/d
+   * @param isRational whether or not this rational is rational, usually <code>true</code>
+   * @param isComplex whether or not this rational is complex
+   * @param scale the {@link BigDecimal} scale at which to treat this rational
+   * @param roundingMode the {@link RoundingMode} at which to treat this rational
    */
   private Rational(BigDecimal numerator, BigDecimal denominator, boolean isRational, boolean isComplex, int scale, RoundingMode roundingMode) {
     this.numerator = numerator;
@@ -127,7 +127,7 @@ public class Rational extends Number implements Comparable<Rational> {
   
   /**
    * Package local method to get the numerator of this Rational.
-   * @return
+   * @return {@link BigDecimal} numerator value
    */
   BigDecimal getNumerator() {
     return new BigDecimal(numerator.toString());
@@ -135,7 +135,7 @@ public class Rational extends Number implements Comparable<Rational> {
   
   /**
    * Package local method to get the denominator of this Rational.
-   * @return
+   * @return {@link BigDecimal} denominator value
    */
   BigDecimal getDenominator() {
     return new BigDecimal(denominator.toString());
@@ -191,7 +191,7 @@ public class Rational extends Number implements Comparable<Rational> {
   
   /**
    * Sets the {@link RoundingMode} for the division operations of this Rational's numerator and denominator. 
-   * @param roundingMode
+   * @param roundingMode {@link RoundingMode} at which to treat this rational
    * @return A new Rational with the newly set rounding mode.
    */
   public Rational setRoundingMode(RoundingMode roundingMode) {
@@ -211,7 +211,7 @@ public class Rational extends Number implements Comparable<Rational> {
   
   /**
    * Adds this to another Rational value, resulting in a single Rational value.
-   * @param r
+   * @param r {@link Rational} value
    * @return A new Rational containing the value of the sum of this and r.
    */
   @Destructive("Uses LCM of the denominators which must be converted to BigIntegers in order to operate.")
@@ -236,7 +236,7 @@ public class Rational extends Number implements Comparable<Rational> {
 
   /**
    * Subtracts another Rational value from this, resulting in a single Rational value.
-   * @param r
+   * @param r {@link Rational} value
    * @return A new Rational containing the value of the difference of this and r.
    */
   public Rational subtract(Rational r) {
@@ -245,7 +245,7 @@ public class Rational extends Number implements Comparable<Rational> {
 
   /**
    * Multiplies this and another Rational value, resulting in a single Rational value.
-   * @param r
+   * @param r {@link Rational} value
    * @return A new Rational containing the value of the product of this and r.
    */
   public Rational multiply(Rational r) {
@@ -261,7 +261,7 @@ public class Rational extends Number implements Comparable<Rational> {
 
   /**
    * Divides this Rational by another Rational, resulting in a single Rational value.
-   * @param r
+   * @param r {@link Rational} value
    * @return a new Rational containing the value of the quotient of this and r.
    */
   public Rational divide(Rational r) {
@@ -299,7 +299,7 @@ public class Rational extends Number implements Comparable<Rational> {
   /**
    * Visible for unit testing, otherwise this is used internally.
    * Inverts a rational.
-   * @param r
+   * @param r {@link Rational} value
    * @return this Rational inverted or flipped as a new Rational.
    */
   public Rational invert(Rational r) {
@@ -373,7 +373,7 @@ public class Rational extends Number implements Comparable<Rational> {
   /**
    * Ensures that the negative value is in the numerator if it is currently in the denominator, and that -x/-y 
    * is transformed into x/y.
-   * @return
+   * @return a pair of values representing the numerator and denominator, with the negative number in the numerator, if necessary
    */
   static Pair<BigDecimal, BigDecimal> normalizeNegative(BigDecimal n, BigDecimal d) {
     if (d.compareTo(BigDecimal.ZERO) < 0 && n.compareTo(BigDecimal.ZERO) > 0) {

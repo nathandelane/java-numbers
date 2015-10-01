@@ -18,10 +18,10 @@ import java.math.BigInteger;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ * </p>
  * <p>
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
  * </p>
  * <p>
  * This class can be used to work with rational numbers, or fractions, in a non-destructive deterministic manner. It is
